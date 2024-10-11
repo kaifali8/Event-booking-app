@@ -1,12 +1,14 @@
 package com.example.event_book.controller;
 
+import com.example.event_book.dto.BookmarkDTO;
 import com.example.event_book.model.Bookmark;
 import com.example.event_book.service.BookmarkService;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/bookmarks")
@@ -27,8 +29,8 @@ public class BookmarkController {
 
     //get all bookmarks of a user
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Bookmark>> getUserBookmarks(@PathVariable Long userId){
-        List<Bookmark> bookmarks=bookmarkService.getUserBookmarks(userId);
+    public ResponseEntity<List<BookmarkDTO>> getUserBookmarks(@PathVariable Long userId){
+        List<BookmarkDTO> bookmarks=bookmarkService.getUserBookmarks(userId);
         return ResponseEntity.ok(bookmarks);
     }
 
@@ -37,5 +39,13 @@ public class BookmarkController {
     public ResponseEntity<Void> deleteBookmark(@PathVariable Long userId,@PathVariable Long eventId){
         bookmarkService.deleteBookmark(userId, eventId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{userId}/events/{eventId}")
+    public ResponseEntity<Map<String, Boolean>> isEventBookmarked(@PathVariable Long userId, @PathVariable Long eventId) {
+        boolean isBookmarked = bookmarkService.isEventBookmarked(userId, eventId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isBookmarked", isBookmarked);
+        return ResponseEntity.ok(response);
     }
 }

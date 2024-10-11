@@ -1,5 +1,6 @@
 package com.example.event_book.service;
 
+import com.example.event_book.dto.BookingDTO;
 import com.example.event_book.exception.ResourceNotFoundException;
 import com.example.event_book.model.Booking;
 import com.example.event_book.model.Event;
@@ -10,6 +11,7 @@ import com.example.event_book.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,11 +50,32 @@ public class BookingService {
     }
 
     //get all booking of a user
-    public List<Booking> getUserBookings(Long userId){
-        User user=userRepository.findById(userId)
-                .orElseThrow(()-> new ResourceNotFoundException("User not found with id:"+userId));
+    public List<BookingDTO> getUserBookings(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        return bookingRepository.findByUser(user);
+        List<Booking> bookings = bookingRepository.findByUser(user);
+        List<BookingDTO> bookingDTOs = new ArrayList<>();
+
+        for (Booking booking : bookings) {
+            Event event = booking.getEvent();
+            BookingDTO bookingDTO = new BookingDTO();
+
+            bookingDTO.setBookingId(booking.getId());
+            bookingDTO.setEventName(event.getName());
+            bookingDTO.setEventCategory(event.getCategory());
+            bookingDTO.setEventLocation(event.getLocation());
+            bookingDTO.setEventCity(event.getCity());
+            bookingDTO.setEventPoster(event.getPoster());
+            bookingDTO.setEventDate(String.valueOf(event.getDate()));
+            bookingDTO.setEventTime(String.valueOf(event.getTime()));
+            bookingDTO.setNumberOfTickets(booking.getNumberOfTickets());
+            bookingDTO.setTotalPrice(booking.getEvent().getPrice().intValue() * booking.getNumberOfTickets());
+
+            bookingDTOs.add(bookingDTO);
+        }
+
+        return bookingDTOs;
     }
 
 
@@ -69,9 +92,32 @@ public class BookingService {
         bookingRepository.delete(booking);
     }
 
-    //
-    public List<Booking> getEventBookings(Long eventId) {
-        return bookingRepository.findByEventId(eventId);
+    // Get all bookings for a specific event
+    public List<BookingDTO> getEventBookings(Long eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + eventId));
+
+        List<Booking> bookings = bookingRepository.findByEventId(eventId);
+        List<BookingDTO> bookingDTOs = new ArrayList<>();
+
+        for (Booking booking : bookings) {
+            BookingDTO bookingDTO = new BookingDTO();
+
+            bookingDTO.setBookingId(booking.getId());
+            bookingDTO.setEventName(event.getName());
+            bookingDTO.setEventCategory(event.getCategory());
+            bookingDTO.setEventLocation(event.getLocation());
+            bookingDTO.setEventCity(event.getCity());
+            bookingDTO.setEventPoster(event.getPoster());
+            bookingDTO.setEventDate(String.valueOf(event.getDate()));
+            bookingDTO.setEventTime(String.valueOf(event.getTime()));
+            bookingDTO.setNumberOfTickets(booking.getNumberOfTickets());
+            bookingDTO.setTotalPrice(booking.getEvent().getPrice().intValue() * booking.getNumberOfTickets());
+
+            bookingDTOs.add(bookingDTO);
+        }
+
+        return bookingDTOs;
     }
 
     //Update booking (eg. number of tickets)

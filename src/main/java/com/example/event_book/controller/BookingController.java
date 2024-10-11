@@ -1,5 +1,6 @@
 package com.example.event_book.controller;
 
+import com.example.event_book.dto.BookingDTO;
 import com.example.event_book.model.Booking;
 import com.example.event_book.service.BookingService;
 import org.springframework.http.ResponseEntity;
@@ -30,15 +31,15 @@ public class BookingController {
 
     //Get all bookings for a specific user
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Booking>> getUserBookings(@PathVariable Long userId){
-        List<Booking> bookings=bookingService.getUserBookings(userId);
+    public ResponseEntity<List<BookingDTO>> getUserBookings(@PathVariable Long userId){
+        List<BookingDTO> bookings=bookingService.getUserBookings(userId);
         return ResponseEntity.ok(bookings);
     }
 
     // Get all bookings for a specific event (Optional: useful for admin/event manager)
     @GetMapping("/event/{eventId}")
-    public ResponseEntity<List<Booking>> getEventBookings(@PathVariable Long eventId) {
-        List<Booking> bookings = bookingService.getEventBookings(eventId);
+    public ResponseEntity<List<BookingDTO>> getEventBookings(@PathVariable Long eventId) {
+        List<BookingDTO> bookings = bookingService.getEventBookings(eventId);
         return ResponseEntity.ok(bookings);
     }
 

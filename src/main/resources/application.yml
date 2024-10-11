@@ -8,3 +8,6 @@ spring:
     username: root
   profiles:
     active: dev
+  server:
+    error:
+      include-message:always
